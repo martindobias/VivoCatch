@@ -1,15 +1,10 @@
 package cz.martindobias.vivocatch.beans;
 
-public abstract class Camera {
-    private String ip;
+public class Camera {
+    public final ServerParameters serverParameters;
 
-    Camera(String ip) {
-        this.ip = ip;
+    Camera(String url) {
+        this.serverParameters = new ServerParameters(url);
     }
 
-    @CameraProperty(name = "hostname", subdir = CameraSubdir.ADMIN, type = String.class)
-    public abstract void setName(String name);
-
-    @CameraProperty(name = "hostname", subdir = CameraSubdir.ADMIN, type = String.class)
-    public abstract String getName();
 }

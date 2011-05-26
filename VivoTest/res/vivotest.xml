@@ -5,7 +5,7 @@
 
     <bean id="factory" class="cz.martindobias.vivocatch.beans.CameraFactory"/>
     <bean id="cam" factory-bean="factory" factory-method="createInstance">
-        <constructor-arg name="ip" value="78.45.55.155"/>
+        <constructor-arg name="url" value="http://jagellonska.imatic.cz"/>
     </bean>
 
 </beans>

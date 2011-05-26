@@ -11,8 +11,8 @@ public class VivoTest {
         context.registerShutdownHook();
 
         Camera camera = (Camera) context.getBean("cam");
-        camera.setName("test");
-        System.out.println(camera.getName());
+        camera.serverParameters.system.setHostname("test");
+        System.out.println(camera.serverParameters.system.getHostname());
     }
 
 }
