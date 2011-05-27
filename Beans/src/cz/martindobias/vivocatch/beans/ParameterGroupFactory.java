@@ -19,6 +19,7 @@ public class ParameterGroupFactory implements MethodInterceptor {
 
     private static final ParameterGroupFactory interceptor = new ParameterGroupFactory();
     private static final HttpClient httpClient;
+
     static {
         httpClient = new DefaultHttpClient();
         HttpParams parameters = httpClient.getParams();

@@ -56,6 +56,7 @@ public enum ParameterType {
     }
 
     private static final Map<String, Boolean> BOOLEAN_MAP;
+
     static {
         BOOLEAN_MAP = new HashMap<String, Boolean>(6);
         BOOLEAN_MAP.put("0", false);
@@ -69,5 +70,6 @@ public enum ParameterType {
     }
 
     public abstract Object parse(String value);
+
     public abstract String convert(Object value);
 }
