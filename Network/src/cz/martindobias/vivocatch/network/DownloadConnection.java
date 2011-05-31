@@ -1,77 +1,137 @@
 package cz.martindobias.vivocatch.network;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.DefaultHttpClientConnection;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
-
 import java.io.IOException;
-import java.net.Socket;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class DownloadConnection implements Runnable {
+public class DownloadConnection extends Connection {
 
-    private final DefaultHttpClientConnection connection;
-    private final BasicHttpParams httpParams;
-    private String server;
-    private int port;
+    private HttpURLConnection connection;
+    private byte[] readBuffer = new byte[1024 * 8];
+    private byte[] messageBuffer = new byte[1024 * 128];
+    private int messageBufferLength = 0;
+    private boolean needsConfirmation = true;
 
-    public DownloadConnection(final String server, final int port, final String id) {
-        this.server = server;
-        this.port = port;
-        this.httpParams = new BasicHttpParams();
-        this.httpParams.setParameter(HttpProtocolParams.PROTOCOL_VERSION, new ProtocolVersion("HTTP", 1, 0));
-        this.httpParams.setParameter(HttpProtocolParams.USER_AGENT, "TunnelClient");
-        this.httpParams.setParameter("x-sessioncookie", id);
-        this.httpParams.setParameter("Accept", "application/x-vvtk-tunnelled");
-        this.httpParams.setParameter("Pragma", "no-cache");
-        this.httpParams.setParameter("Cache-Control", "no-cache");
-        this.httpParams.setParameter("Connection", "Keep-Alive");
-        this.connection = new DefaultHttpClientConnection();
+    protected DownloadConnection(final String server, final int port, final String id) {
+        super(server, port, id);
     }
 
-    /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p/>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
-     */
-    public void run() {
+    @Override
+    public boolean handle() {
         try {
-            Socket socket = new Socket(this.server, this.port);
-            this.connection.bind(socket, this.httpParams);
+            if(this.connection != null) {
+                // read as much as possible
+                InputStream is = this.connection.getInputStream();
+                int count;
+                do {
+                    if(is.available() > 0) {
+                        count = is.read(this.readBuffer);
+                        if(count > 0) {
+                            System.arraycopy(this.readBuffer, 0, this.messageBuffer, this.messageBufferLength, count);
+                            this.messageBufferLength += count;
+                        }
+                    } else {
+                        count = 0;
+                    }
+                } while(count > 0);
 
-            BasicHttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest("GET", "/cgi-bin/admin/ctrlevent.cgi");
-            request.setEntity(new StringEntity("\n"));
-            this.connection.sendRequestHeader(request);
+                // decode
+                if(this.needsConfirmation) {
+                    // first message has defined format: http tunnel accept=0|1
+                    if(this.messageBufferLength >= 20) {
+                        if(new String(this.messageBuffer, 0, 19, "ASCII").equals("http tunnel accept=")) {
+                            if(this.messageBuffer[19] == '1') {
+                                this.shiftMessageBuffer(20);
+                                this.needsConfirmation = false;
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                } else {
+                    // decode XML message (at least 3 bytes read - delimeter, length, data)
+                    if(this.messageBufferLength >= 3) {
+                        // try to resync first (search for 0xFF)
+                        int i;
+                        for(i = 0; i < this.messageBufferLength && this.messageBuffer[i] != -1; i++) {
+                        }
+                        if(i > 0) {
+                            this.shiftMessageBuffer(i);
+                        }
 
-            HttpResponse response = this.connection.receiveResponseHeader();
-            System.out.println(response);
+                        // decode data length
+                        int realLength = 0;
+                        int length = this.messageBuffer[1];
+                        if(length < 0) {
+                            // need to read length first
+                            length += 128;
+                            // only continue if whole length arrived
+                            if(this.messageBufferLength >= length + 2) {
+                                for(int j = 0; j < length; j++) {
+                                    realLength *= 256;
+                                    realLength += this.messageBuffer[j + 2];
+                                }
+                                // set length var to length of read field
+                                length += 1;
+                            }
+                        } else {
+                            realLength = length;
+                            // set length var to length of read field
+                            length = 1;
+                        }
 
-            do {
-                if(this.connection.isResponseAvailable(1)) {
-                    this.connection.receiveResponseEntity(response);
-                    System.out.println(EntityUtils.toString(response.getEntity()));
+                        // are data ready? consume!
+                        if(this.messageBufferLength >= realLength + length + 1) {
+                            String xml = new String(this.messageBuffer, length + 1, this.messageBufferLength - length - 1, "ASCII");
+                            this.shiftMessageBuffer(realLength + length + 1);
+                            System.out.println(xml);
+                        }
+                    }
+
+                    if(count == -1) {
+                        return true;
+                    }
                 }
-                Thread.sleep(100);
-            } while(true);
-        } catch(Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                this.connection.shutdown();
-            } catch(IOException ignored) {
-                ignored.printStackTrace();
             }
+        } catch(IOException ignored) {
+            ignored.printStackTrace();
         }
+        return false;
+    }
 
+    private void shiftMessageBuffer(final int length) {
+        this.messageBufferLength -= length;
+        System.arraycopy(this.messageBuffer, length, this.messageBuffer, 0, this.messageBufferLength);
+    }
+
+    @Override
+    public void cleanup() {
+        if(this.connection != null) {
+            this.connection.disconnect();
+            this.connection = null;
+        }
+    }
+
+    @Override
+    public boolean prepare() {
+        this.cleanup();
+        try {
+            URL url = new URL("http", this.server, this.port, "/cgi-bin/admin/ctrlevent.cgi");
+            this.connection = (HttpURLConnection) url.openConnection();
+            this.connection.setRequestMethod("GET");
+            this.connection.setRequestProperty("User-Agent", "TunnelClient");
+            this.connection.setRequestProperty("x-sessioncookie", this.id);
+            this.connection.setRequestProperty("Accept", "application/x-vvtk-tunnelled");
+            this.connection.setRequestProperty("Pragma", "no-cache");
+            this.connection.setRequestProperty("Cache-Control", "no-cache");
+            this.connection.setRequestProperty("Connection", "Keep-Alive");
+
+            this.connection.connect();
+            return false;
+        } catch(IOException ignored) {
+            ignored.printStackTrace();
+            return true;
+        }
     }
 }

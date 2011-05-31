@@ -24,7 +24,7 @@ public class VivoTest {
         camera.serverParameters.system.setLedOff(ledOff);
 
         ControlEventChannel channel = new ControlEventChannel();
-        channel.open("jagellonska.imatic.cz", 80);
+        channel.open(camera.getAddress(), camera.getPort());
         try {
             System.in.read();
         } catch(IOException ignored) {

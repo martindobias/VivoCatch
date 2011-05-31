@@ -1,0 +1,7 @@
+cglib 2.2.2 http://sourceforge.net/projects/cglib/files/cglib2/2.2.2/
+httpcomponents 4.1.1 http://trixes.net/pub//httpcomponents/httpclient/binary/httpcomponents-client-4.1.1-bin.zip
+jna 3.2.7 http://java.net/projects/jna/downloads/directory/3.2.7
+spring 3.0.5 http://www.springsource.com/download/community
+vlc 1.1.9 http://download.videolan.org/pub/videolan/vlc/1.1.9/
+vlcj 1.1.5.1 http://code.google.com/p/vlcj/downloads/list?can=1&q=1.1.5.1&colspec=Filename+Summary+Uploaded+Size+DownloadCount
+
