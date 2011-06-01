@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VivoCatch
-Bundle-SymbolicName: cz.martindobias.vivocatch; singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: cz.martindobias.vivocatch;singleton:=true
+Bundle-Version: 1.0.0.0
 Bundle-Activator: cz.martindobias.vivocatch.Activator
-Bundle-Vendor: Martin Dobias
+Bundle-Vendor: Martin Dobiáš
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

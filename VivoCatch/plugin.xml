@@ -3,7 +3,7 @@
 <plugin>
 
    <extension
-         id="application"
+         id="cz.martindobias.vivocatch.applications"
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
@@ -12,24 +12,35 @@
       </application>
    </extension>
    <extension
+         id="cz.martindobias.vivocatch.perspectives"
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="RCP Perspective"
-            class="cz.martindobias.vivocatch.Perspective"
-            id="cz.martindobias.vivocatch.perspective">
+            class="cz.martindobias.vivocatch.perspectives.MainPerspectiveFactory"
+            id="cz.martindobias.vivocatch.perspectives.main"
+            name="VivoCatch">
       </perspective>
    </extension>
    <extension
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            application="cz.martindobias.vivocatch.application"
+            application="cz.martindobias.vivocatch.applications"
             name="VivoCatch">
          <property
-               name="windowImages"
-               value="icons/alt_window_16.gif,icons/alt_window_32.gif">
+               name="appName"
+               value="VivoCatch">
          </property>
       </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="*">
+      </perspectiveExtension>
+   </extension>
+   <extension
+         id="cz.martindobias.vivocatch.views"
+         point="org.eclipse.ui.views">
    </extension>
 
 </plugin>
