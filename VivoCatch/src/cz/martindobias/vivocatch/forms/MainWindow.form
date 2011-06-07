@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="cz.martindobias.vivocatch.forms.MainWindow">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="682" height="519"/>
+    </constraints>
+    <properties>
+      <preferredSize width="600" height="400"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <splitpane id="50d12">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <dividerLocation value="400"/>
+          <oneTouchExpandable value="true"/>
+          <resizeWeight value="1.0"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <grid id="ad8f3" binding="cameraPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <splitpane position="left"/>
+            </constraints>
+            <properties/>
+            <border type="etched"/>
+            <children/>
+          </grid>
+          <grid id="9c553" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <splitpane position="right"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <tabbedpane id="f04c6" binding="sideBar">
+                <constraints border-constraint="Center"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <grid id="4a229" layout-manager="BorderLayout" hgap="0" vgap="0">
+                    <constraints>
+                      <tabbedpane title="Kamera"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="1f9fd" class="javax.swing.JTable" binding="infoTable">
+                        <constraints border-constraint="Center"/>
+                        <properties>
+                          <autoResizeMode value="4"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="86ec3" layout-manager="BorderLayout" hgap="0" vgap="0">
+                    <constraints>
+                      <tabbedpane title="Nastavení"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="6d7e7" class="javax.swing.JTable" binding="settingTable">
+                        <constraints border-constraint="Center"/>
+                        <properties/>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
+              </tabbedpane>
+            </children>
+          </grid>
+        </children>
+      </splitpane>
+      <grid id="64afc" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties>
+          <maximumSize width="2147483647" height="20"/>
+          <minimumSize width="0" height="20"/>
+          <preferredSize width="0" height="20"/>
+        </properties>
+        <border type="etched"/>
+        <children/>
+      </grid>
+    </children>
+  </grid>
+</form>

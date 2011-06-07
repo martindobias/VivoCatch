@@ -4,8 +4,10 @@ public class Camera {
     public final ServerParameters serverParameters;
     private String address;
     private int port;
+    private String name;
+    private String stream;
 
-    Camera(String address, int port, String base) {
+    public Camera(String address, int port, String base) {
         this.address = address;
         this.port = port;
         this.serverParameters = new ServerParameters(String.format("http://%s%s%s", address, port > 0 ? ":" + port : "", base));
@@ -17,5 +19,21 @@ public class Camera {
 
     public int getPort() {
         return port;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setStream(String stream) {
+        this.stream = stream;
+    }
+
+    public String getStream() {
+        return stream;
     }
 }
