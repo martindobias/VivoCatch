@@ -23,7 +23,7 @@ public class MainWindow extends JFrame {
     public MainWindow(Desktop desktop) {
         super("VivoCatch");
 
-        this.mediaPlayerFactory = new PlayerFactory(this);
+        this.mediaPlayerFactory = new PlayerFactory(this, desktop.getRtpCaching(), desktop.getRtspCaching(), desktop.getRealRtspCaching());
         this.cameraPanel.setLayout(new GridLayout(0, desktop.getWidth(), 10, 10));
         this.players = new Vector<CameraPanel>(desktop.getWidth() * 3);
 

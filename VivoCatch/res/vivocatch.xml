@@ -34,6 +34,9 @@
                 <ref bean="jagellonska3"/>
             </list>
         </property>
+        <property name="rtpCaching" value="1000"/>
+        <property name="rtspCaching" value="1200"/>
+        <property name="realRtspCaching" value="3000"/>
     </bean>
 
 </beans>
